@@ -1,0 +1,42 @@
+services:
+  backend:
+    build: ./backend
+    image: amd-apu-vulkan-llamacpp:latest
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      - video
+    volumes:
+      - ./models:/models:ro
+    environment:
+      MODEL_FILE: ${MODEL_FILE}
+      MMPROJ_FILE: ${MMPROJ_FILE:-}
+      LLAMA_NGL: ${LLAMA_NGL:-99}
+      LLAMA_NP: ${LLAMA_NP:-8}
+      LLAMA_CTX: ${LLAMA_CTX:-65536}
+      LLAMA_THREADS: ${LLAMA_THREADS:-32}
+      LLAMA_BATCH: ${LLAMA_BATCH:-2048}
+      LLAMA_UBATCH: ${LLAMA_UBATCH:-512}
+      LLAMA_CACHE_TYPE_K: ${LLAMA_CACHE_TYPE_K:-q8_0}
+      LLAMA_CACHE_TYPE_V: ${LLAMA_CACHE_TYPE_V:-q8_0}
+      LLAMA_FLASH_ATTN: ${LLAMA_FLASH_ATTN:-0}
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    restart: unless-stopped
+
+  gateway:
+    build: ./gateway
+    image: amd-apu-vulkan-gateway:latest
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${HOST_PORT:-1987}:8000"
+    environment:
+      BACKEND_URL: http://backend:8000
+      API_KEY: ${API_KEY:-}
+    restart: unless-stopped
