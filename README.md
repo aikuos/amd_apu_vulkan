@@ -39,13 +39,13 @@ hf download ggml-org/Qwen3-Omni-30B-A3B-Instruct-GGUF \
   mmproj-Qwen3-Omni-30B-A3B-Instruct-Q8_0.gguf \
   --local-dir models/Qwen3-Omni-30B-A3B-Instruct-GGUF
 docker compose up -d --build
-curl http://localhost:1987/health
+curl http://localhost:6666/health
 ```
 
 Set a real `API_KEY` in `.env`. Then test it:
 
 ```bash
-curl http://localhost:1987/v1/chat/completions \
+curl http://localhost:6666/v1/chat/completions \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer YOUR_API_KEY' \
   -d '{"model":"gpu-Qwen3-Omni-30B-A3B-Instruct-Q4_K_M.gguf","messages":[{"role":"user","content":"Say hello."}],"max_tokens":64}'
@@ -79,7 +79,7 @@ Q4/Q5/Q6/Q8 are weight quantizations, not Docker image variants.
 
 ## API and operations
 
-The gateway exposes `http://HOST:1987/v1`. Prefix the model ID with `gpu-` so
+The gateway exposes `http://HOST:6666/v1`. Prefix the model ID with `gpu-` so
 the gateway sends it to Vulkan. Streaming works by adding `"stream": true`.
 
 ```bash

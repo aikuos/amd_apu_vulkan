@@ -35,7 +35,7 @@ services:
       backend:
         condition: service_healthy
     ports:
-      - "${HOST_PORT:-1987}:8000"
+      - "${HOST_PORT:-6666}:8000"
     environment:
       BACKEND_URL: http://backend:8000
       API_KEY: ${API_KEY:-}
